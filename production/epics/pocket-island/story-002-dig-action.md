@@ -1,7 +1,7 @@
 # Story 002: タイルを掘って中身を判明させる
 
 > **Epic**: pocket-island
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: N/A (minimal — no layers)
 > **Type**: Logic
 > **Estimate**: M
@@ -88,3 +88,12 @@ N/A (minimal — no control manifest)
 
 - Depends on: `production/epics/pocket-island/story-001-island-generation.md`
 - Unlocks: `production/epics/pocket-island/story-003-tide-timer.md`, `production/epics/pocket-island/story-004-treasures-and-trap.md`
+
+---
+
+## Completion Notes
+**Completed**: 2026-10-30
+**Criteria**: 7/7 passing (none deferred)
+**Deviations**: ADVISORY — 掘削済みの色の定数が `src/island/island_view.gd` のコード内にある(見た目の値)。ADVISORY — AC-5 は 1152×648 の横長でのみ実測、縦長のスマホ画面は未確認。OUT OF SCOPE — Godot が自動生成した `dig_system.gd.uid` と `.godot/global_script_class_cache.cfg` がコミットに含まれる。工程上の注記 — 実装エージェントが指示に反してシェルでファイルを書いたが、書かれたのは承認済みの 3 ファイルのみで内容は確認済み。
+**Test Evidence**: waived at qa.level minimal。保存済みスクリーンショットは `production/qa/evidence/story-002-dig-action/01-before-dig.png` と `02-after-dig.png`(上の Required evidence に書かれたパスは、フォルダ名を欠いた古い表記)。同フレーム更新の実機検証の出力は保存していない。
+**Reviewed by**: self, no independent review
