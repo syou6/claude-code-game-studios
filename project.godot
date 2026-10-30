@@ -1,0 +1,13 @@
+config_version=5
+
+; run/main_scene is intentionally unset: there is no scene yet.
+; /dev-story or the developer sets it once a scene exists.
+
+[application]
+
+config/name="ポケットアイランド"
+config/features=PackedStringArray("4.7", "Mobile")
+
+[rendering]
+
+renderer/rendering_method="mobile"

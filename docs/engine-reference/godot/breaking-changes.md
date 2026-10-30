@@ -1,8 +1,19 @@
 # Godot — Breaking Changes
 
-Last verified: 2026-10-17 (4.6 → 4.7 and the section dates); 2026-02-12 (older sections)
+Last verified: 2026-10-30 (4.7 → 4.7.2 only); 2026-10-17 (4.6 → 4.7 and the section dates); 2026-02-12 (older sections)
 
 Changes between Godot versions, focused on post-LLM-cutoff changes (4.4+).
+
+## 4.7 → 4.7.2 (Aug 2026 — maintenance release)
+
+- Godot's release page calls 4.7.2 "a maintenance release addressing stability and usability issues" and states that
+  "maintenance releases are compatible with previous releases and are recommended for adoption".
+  Source: https://github.com/godotengine/godot/releases/tag/4.7.2-stable (fetched 2026-10-30).
+- No breaking changes, deprecations or behavior changes are stated there. That is the absence of a statement,
+  not a verified absence of changes.
+- NOT SOURCEABLE — per-area fixes (rendering, physics, 2D, input/touch, export/mobile, GDScript), not stated at
+  https://github.com/godotengine/godot/releases/tag/4.7.2-stable. The page links to a changelog that was not
+  fetched; read https://github.com/godotengine/godot/blob/master/CHANGELOG.md before relying on a specific fix.
 
 ## 4.6 → 4.7 (Jun 2026 — POST-CUTOFF, HIGH RISK)
 
