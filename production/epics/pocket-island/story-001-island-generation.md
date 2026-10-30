@@ -62,14 +62,15 @@ N/A (minimal — no control manifest)
 
 ## Files
 
-- `src/island/island_grid.gd`
-- `src/island/island_generator.gd`
-- `src/island/island_view.gd`
-- `src/main.tscn`
-- `assets/data/island_config.json`
-- `tests/unit/island/island_generator_test.gd`
-
----
+- `src/island/island_grid.gd` — created (island data model)
+- `src/island/island_generator.gd` — created (seeded generation, boat placement)
+- `src/island/island_view.gd` — created (draws the grid, fits any window)
+- `src/main.gd` — created (reads config, picks seed, composes)
+- `src/main.tscn` — created (main scene)
+- `assets/data/island_config.json` — created (island tuning values)
+- `assets/data/island_config.md` — created (schema for the JSON)
+- `project.godot` — modified (run/main_scene)
+- No test file: waived at `qa.level: minimal`
 
 ## QA Test Cases
 
