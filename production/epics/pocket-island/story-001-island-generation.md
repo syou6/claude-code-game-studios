@@ -1,7 +1,7 @@
 # Story 001: 格子状の島を生成して表示する
 
 > **Epic**: pocket-island
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: N/A (minimal — no layers)
 > **Type**: Logic
 > **Estimate**: M
@@ -95,3 +95,12 @@ N/A (minimal — no control manifest)
 
 - Depends on: None
 - Unlocks: `production/epics/pocket-island/story-002-dig-action.md`
+
+---
+
+## Completion Notes
+**Completed**: 2026-10-30
+**Criteria**: 8/8 passing (none deferred)
+**Deviations**: ADVISORY — 色と枠の余白の定数 4 つが `src/island/island_view.gd` のコード内にある(見た目の値)。ADVISORY — AC-8 は 1152×648 の横長でのみ確認、縦長のスマホ画面は未確認。OUT OF SCOPE — Godot が自動生成する `.uid` ファイル 4 つと `.godot/global_script_class_cache.cfg` がコミットに含まれる。舟は「外海から届く岸」に限定した(基準より 1 段厳しい)。
+**Test Evidence**: waived at qa.level minimal。保存済みスクリーンショットは `production/qa/evidence/story-001-island-generation/01-island-launch.png`(上の Required evidence に書かれたパスは、フォルダ名を欠いた古い表記)
+**Reviewed by**: self, no independent review
