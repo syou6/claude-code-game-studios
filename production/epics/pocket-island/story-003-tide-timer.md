@@ -1,12 +1,12 @@
 # Story 003: 潮位タイマーと満潮時の失敗判定
 
 > **Epic**: pocket-island
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: N/A (minimal — no layers)
 > **Type**: Logic
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-10-30
 
 ## Context
 
