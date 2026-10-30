@@ -1,7 +1,7 @@
 # Story 003: 潮位タイマーと満潮時の失敗判定
 
 > **Epic**: pocket-island
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: N/A (minimal — no layers)
 > **Type**: Logic
 > **Estimate**: M
@@ -92,3 +92,12 @@ N/A (minimal — no control manifest)
 
 - Depends on: `production/epics/pocket-island/story-002-dig-action.md`
 - Unlocks: `production/epics/pocket-island/story-006-boat-return-and-score.md`
+
+---
+
+## Completion Notes
+**Completed**: 2026-10-30
+**Criteria**: 8/8 passing (none deferred; AC-8 judged satisfied by construction — the tide advances only by frame delta — with mobile pause/resume NOT verified on a device)
+**Deviations**: ADVISORY — mobile pause/resume untested on a real device. ADVISORY — gauge colours, width and label sizing are 8 constants in `src/ui/tide_gauge.gd` (presentation values). ADVISORY — the "満潮" label goes through `tr()` with no translation table yet. ADVISORY — CJK rendering with the default font was only seen in this environment. OUT OF SCOPE — Godot-generated `.uid` files for the 3 new scripts and `.godot/global_script_class_cache.cfg` are in the commit. Design simplifications (same behaviour): one clamped tide accumulator instead of elapsed + extra; `Phase.RETURNED` is the "returned to boat" flag rather than a separate bool.
+**Test Evidence**: waived at qa.level minimal. Retained screenshots: `production/qa/evidence/story-003-tide-timer/01-mid-tide.png`, `02-full-tide-failed.png` (the Required evidence path above predates the per-story folder convention). Logic probes (determinism, clamp, returned-before-full) were observed in a driver script whose output is not retained.
+**Reviewed by**: self, no independent review
