@@ -1,7 +1,7 @@
 # Story 004: 宝3種と罠1種
 
 > **Epic**: pocket-island
-> **Status**: In Progress
+> **Status**: Complete
 > **Layer**: N/A (minimal — no layers)
 > **Type**: Logic
 > **Estimate**: L
@@ -91,3 +91,12 @@ N/A (minimal — no control manifest)
 
 - Depends on: `production/epics/pocket-island/story-002-dig-action.md`, `production/epics/pocket-island/story-003-tide-timer.md`
 - Unlocks: `production/epics/pocket-island/story-005-shovel-upgrade.md`, `production/epics/pocket-island/story-006-boat-return-and-score.md`
+
+---
+
+## Completion Notes
+**Completed**: 2026-10-30
+**Criteria**: 7/7 passing (none deferred)
+**Deviations**: ADVISORY — 4 presentation constants (treasure, trap and tool colours, content inset ratio) live in `src/island/island_view.gd`. ADVISORY — the data file is named `items.json`, not the `[system]_[name].json` pattern in `.claude/rules/data-files.md`; kept as the story planned it. ADVISORY — spawn weights, treasure values and trap tide are untuned proposals (rationale in `assets/data/items.md`). OUT OF SCOPE — Godot-generated `.uid` files for the 2 new scripts and `.godot/global_script_class_cache.cfg` are in the commit.
+**Test Evidence**: waived at qa.level minimal. Retained screenshots: `production/qa/evidence/story-004-treasures-and-trap/01-treasure-trap-dug.png`, `02-trap-filled-tide-failed.png` (the Required evidence path above predates the per-story folder convention). Determinism and the 300-island ratio tally were observed in a driver script whose output is not retained.
+**Reviewed by**: self, no independent review
