@@ -1,12 +1,12 @@
 # Story 001: 格子状の島を生成して表示する
 
 > **Epic**: pocket-island
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: N/A (minimal — no layers)
 > **Type**: Logic
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-10-30
 
 ## Context
 
