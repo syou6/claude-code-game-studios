@@ -60,13 +60,14 @@ N/A (minimal — no control manifest)
 
 ## Files
 
-- `src/tide/tide_timer.gd`
-- `src/tide/run_state.gd`
-- `src/ui/tide_gauge.gd`
-- `assets/data/tide_config.json`
-- `tests/unit/tide/tide_timer_test.gd`
-
----
+- `src/tide/tide_timer.gd` — created (pure tide clock, add_tide entry point)
+- `src/tide/run_state.gd` — created (DIGGING / RETURNED / FAILED, dig gate, treasure_counts)
+- `src/ui/tide_gauge.gd` — created (left-edge gauge, failed colour and label)
+- `src/main.gd` — modified (tide config, timer and run state wiring, gauge, --tide-seconds debug override)
+- `src/island/island_view.gd` — modified (run-state dig gate)
+- `assets/data/tide_config.json` — created (full_tide_seconds)
+- `assets/data/tide_config.md` — created (schema)
+- No test file: waived at `qa.level: minimal`
 
 ## QA Test Cases
 

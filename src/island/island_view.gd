@@ -5,7 +5,8 @@ extends Control
 ## whenever the control is resized; drawing and input share one layout helper
 ## so a tap always maps to the tile drawn under it.
 ## Implements design/game-brief.md MVP features 1 and 2
-## (story-001-island-generation, story-002-dig-action).
+## (story-001-island-generation, story-002-dig-action); the dig gate on the
+## run's phase is MVP feature 3 (story-003-tide-timer).
 
 ## Color of SEA tiles.
 const SEA_COLOR: Color = Color(0.16, 0.42, 0.78)
@@ -20,6 +21,7 @@ const TILE_INSET_RATIO: float = 0.04
 
 var _grid: IslandGrid
 var _dig_system: DigSystem
+var _run_state: RunState
 var _cell_size: float = 0.0
 var _origin: Vector2 = Vector2.ZERO
 
@@ -43,6 +45,13 @@ func set_grid(grid: IslandGrid) -> void:
 ## enters the tree; a view with none injected creates a default one in _ready().
 func set_dig_system(dig_system: DigSystem) -> void:
 	_dig_system = dig_system
+
+
+## Injects the run state that gates digging: taps are refused unless
+## `run_state.can_dig()` is true (a failed or finished run). A view with none
+## injected always digs.
+func set_run_state(run_state: RunState) -> void:
+	_run_state = run_state
 
 
 ## Handles a left mouse press or a screen touch press as a dig tap. Godot's
@@ -92,6 +101,8 @@ func _update_layout() -> void:
 # `local_position` is in this control's coordinate space (as given to _gui_input).
 func _handle_tap(local_position: Vector2) -> void:
 	if _grid == null or _dig_system == null:
+		return
+	if _run_state != null and not _run_state.can_dig():
 		return
 	_update_layout()
 	var cell: Vector2i = DigSystem.position_to_cell(
