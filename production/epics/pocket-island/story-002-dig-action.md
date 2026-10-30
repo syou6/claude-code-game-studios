@@ -1,12 +1,12 @@
 # Story 002: タイルを掘って中身を判明させる
 
 > **Epic**: pocket-island
-> **Status**: Ready
+> **Status**: In Progress
 > **Layer**: N/A (minimal — no layers)
 > **Type**: Logic
 > **Estimate**: M
 > **Manifest Version**: N/A (minimal — no control manifest)
-> **Last Updated**: [set by /dev-story when implementation begins]
+> **Last Updated**: 2026-10-30
 
 ## Context
 
@@ -60,11 +60,10 @@ N/A (minimal — no control manifest)
 
 ## Files
 
-- `src/island/dig_system.gd`
-- `src/island/island_view.gd`(タップ入力と表示の更新)
-- `tests/unit/island/dig_system_test.gd`
-
----
+- `src/island/dig_system.gd` — created (position-to-cell conversion, dig logic, dig range)
+- `src/island/island_grid.gd` — modified (per-tile dug state)
+- `src/island/island_view.gd` — modified (tap input, shared layout, dug colour)
+- No test file: waived at `qa.level: minimal`
 
 ## QA Test Cases
 
