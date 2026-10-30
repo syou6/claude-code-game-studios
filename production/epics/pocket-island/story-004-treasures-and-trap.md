@@ -58,14 +58,15 @@ N/A (minimal — no control manifest)
 
 ## Files
 
-- `src/items/tile_content.gd`
-- `src/items/treasure_table.gd`
-- `src/island/island_generator.gd`(中身の配置を追加)
-- `src/island/island_view.gd`(中身の表示を追加)
-- `assets/data/items.json`
-- `tests/unit/items/treasure_table_test.gd`
-
----
+- `src/items/tile_content.gd` — created (content kinds: empty, treasure, trap, tool)
+- `src/items/treasure_table.gd` — created (weighted pick, populate every land tile)
+- `src/island/dig_system.gd` — modified (inventory, trap applies tide via injected timer)
+- `src/island/island_generator.gd` — modified (optional table, same rng)
+- `src/island/island_view.gd` — modified (per-kind colour on dug tiles)
+- `src/main.gd` — modified (items config validation, table and dig system wiring)
+- `assets/data/items.json` — created (weights, 3 treasures, trap, tool slot)
+- `assets/data/items.md` — created (schema)
+- No test file: waived at `qa.level: minimal`
 
 ## QA Test Cases
 

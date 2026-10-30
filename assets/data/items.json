@@ -1,0 +1,20 @@
+{
+	"spawn_weights": {
+		"empty": 50,
+		"treasure": 30,
+		"trap": 12,
+		"tool": 8
+	},
+	"treasures": [
+		{"id": "shell", "value": 10, "weight": 60},
+		{"id": "coin", "value": 30, "weight": 30},
+		{"id": "gem", "value": 100, "weight": 10}
+	],
+	"trap": {
+		"id": "crab",
+		"tide_seconds": 20
+	},
+	"tool": {
+		"id": "shovel_upgrade"
+	}
+}

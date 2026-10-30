@@ -6,18 +6,30 @@ extends Control
 ## so a tap always maps to the tile drawn under it.
 ## Implements design/game-brief.md MVP features 1 and 2
 ## (story-001-island-generation, story-002-dig-action); the dig gate on the
-## run's phase is MVP feature 3 (story-003-tide-timer).
+## run's phase is MVP feature 3 (story-003-tide-timer); the per-kind look of a
+## dug tile's contents is MVP feature 4 (story-004-treasures-and-trap).
 
 ## Color of SEA tiles.
 const SEA_COLOR: Color = Color(0.16, 0.42, 0.78)
 ## Color of LAND tiles that have not been dug.
 const LAND_UNDUG_COLOR: Color = Color(0.86, 0.78, 0.45)
-## Color of LAND tiles that have been dug (clearly darker than undug land).
+## Color of LAND tiles that have been dug (clearly darker than undug land). A
+## dug tile with EMPTY or no contents shows only this color.
 const LAND_DUG_COLOR: Color = Color(0.42, 0.26, 0.14)
 ## Color of the boat's tile.
 const BOAT_COLOR: Color = Color(0.93, 0.35, 0.15)
+## Color of a revealed TREASURE (gold), drawn as an inner square on dug land.
+const TREASURE_COLOR: Color = Color(1.0, 0.84, 0.2)
+## Color of a revealed TRAP (purple; distinct from the orange boat and from the
+## red failed-tide gauge).
+const TRAP_COLOR: Color = Color(0.6, 0.15, 0.7)
+## Color of a revealed TOOL slot (teal).
+const TOOL_COLOR: Color = Color(0.1, 0.78, 0.72)
 ## Fraction of a cell left empty on each side, to show the grid.
 const TILE_INSET_RATIO: float = 0.04
+## Fraction of a cell left as dug-brown border on each side of the contents
+## square, so a tile reads as both "dug" and "holds this kind".
+const CONTENT_INSET_RATIO: float = 0.22
 
 var _grid: IslandGrid
 var _dig_system: DigSystem
@@ -28,9 +40,9 @@ var _origin: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	resized.connect(queue_redraw)
-	# Default composition: if no DigSystem was injected before the view entered
-	# the tree, create one here so main.gd needs no change. Inject one with
-	# set_dig_system() to share or configure it (e.g. a wider range, story 005).
+	# Fallback composition: a view that never gets set_dig_system() still digs.
+	# This runs before the parent's _ready (children are readied first), so an
+	# injection made there replaces this default; an injected system always wins.
 	if _dig_system == null:
 		_dig_system = DigSystem.new()
 
@@ -42,7 +54,8 @@ func set_grid(grid: IslandGrid) -> void:
 
 
 ## Injects the DigSystem used to handle taps. Call before or after the view
-## enters the tree; a view with none injected creates a default one in _ready().
+## enters the tree; the injected system replaces the default one _ready() makes
+## for a view that had none, so the caller's system is always the one used.
 func set_dig_system(dig_system: DigSystem) -> void:
 	_dig_system = dig_system
 
@@ -80,6 +93,7 @@ func _draw() -> void:
 		return
 	_update_layout()
 	var inset: float = _cell_size * TILE_INSET_RATIO
+	var content_inset: float = _cell_size * CONTENT_INSET_RATIO
 	for y: int in _grid.rows:
 		for x: int in _grid.columns:
 			var cell := Vector2i(x, y)
@@ -90,6 +104,20 @@ func _draw() -> void:
 				color = BOAT_COLOR
 			var rect := Rect2(_origin + Vector2(x, y) * _cell_size, Vector2(_cell_size, _cell_size))
 			draw_rect(rect.grow(-inset), color)
+			if not (_grid.is_land(cell) and _grid.is_dug(cell)):
+				continue
+			# Revealed contents: an inner square in the kind's color over the
+			# dug-brown. EMPTY and unpopulated (null) tiles stay plain dug-brown.
+			var content: TileContent = _grid.get_contents(cell)
+			if content == null:
+				continue
+			match content.kind:
+				TileContent.Kind.TREASURE:
+					draw_rect(rect.grow(-content_inset), TREASURE_COLOR)
+				TileContent.Kind.TRAP:
+					draw_rect(rect.grow(-content_inset), TRAP_COLOR)
+				TileContent.Kind.TOOL:
+					draw_rect(rect.grow(-content_inset), TOOL_COLOR)
 
 
 # Single source of the cell size and grid origin, used by both _draw and input.

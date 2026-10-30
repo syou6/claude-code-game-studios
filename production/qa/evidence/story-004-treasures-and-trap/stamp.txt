@@ -1,0 +1,8 @@
+Reviewed-Content-Hash: src/items/tile_content.gd 5ae13b9d8a5d307f870cf98e0b98b95af99889db
+Reviewed-Content-Hash: src/items/treasure_table.gd 8dee74f667425fedbd535f28e1c0eaf9f1da2b2f
+Reviewed-Content-Hash: src/island/dig_system.gd e5d03c593a174c1aa28904e45e15e36746890e49
+Reviewed-Content-Hash: src/island/island_generator.gd f28d2d527d787d998dc55ffc1a572f9148624d86
+Reviewed-Content-Hash: src/island/island_view.gd cb20a07b2ad5af927e1453a4ae8d69453cfb1ef6
+Reviewed-Content-Hash: src/main.gd abdafcf15ceb602439fd578f79d32e9d5f532cb5
+Reviewed-Content-Hash: assets/data/items.json 80d165806d9d4727fb7b6a3d26a9e816705f1f5a
+Reviewed-Content-Hash: assets/data/items.md 0cc51b15e026910de7b3353d8894f48e3ba565a1
