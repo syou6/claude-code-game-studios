@@ -15,6 +15,7 @@
 		"tide_seconds": 20
 	},
 	"tool": {
-		"id": "shovel_upgrade"
+		"id": "shovel_upgrade",
+		"dig_range": [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]]
 	}
 }

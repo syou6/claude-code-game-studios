@@ -58,12 +58,13 @@ N/A (minimal — no control manifest)
 
 ## Files
 
-- `src/items/shovel_upgrade.gd`
-- `src/island/dig_system.gd`(範囲の差し替えに対応)
-- `assets/data/items.json`(強化の定義を追加)
-- `tests/unit/items/shovel_upgrade_test.gd`
-
----
+- `src/island/dig_system.gd` — modified (upgrade range, has_upgrade, range applies from the next tap)
+- `src/island/island_view.gd` — modified (teal upgrade frame, layout margin; one tap handled once when touch is emulated as mouse)
+- `src/main.gd` — modified (tool.dig_range validation and injection)
+- `assets/data/items.json` — modified (tool.dig_range plus shape)
+- `assets/data/items.md` — modified (dig_range schema)
+- Not created: `src/items/shovel_upgrade.gd` (logic lives in DigSystem, per the story's note not to duplicate dig logic)
+- No test file: waived at `qa.level: minimal`
 
 ## QA Test Cases
 

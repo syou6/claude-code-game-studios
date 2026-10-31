@@ -1,0 +1,5 @@
+Reviewed-Content-Hash: src/island/dig_system.gd 19f29bd58cf54cc589a7f98ba6c569ab29e85f64
+Reviewed-Content-Hash: src/island/island_view.gd 6cb1bae9c0078282c7f997121fa637079699478e
+Reviewed-Content-Hash: src/main.gd da8672ac82baaf0f99f50a2f19a083e437450b7a
+Reviewed-Content-Hash: assets/data/items.json a5467faa14e1f76b5d4db83af44e061ea76f7625
+Reviewed-Content-Hash: assets/data/items.md 3b54bc4e8eaaedc8499b00612257da380d3526b5

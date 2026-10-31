@@ -1,11 +1,11 @@
 extends Control
 ## Composition point: reads the island, tide and items configs, picks the
 ## runtime seed, generates the island (land and contents) and gives it to the
-## view, wires the dig system to the tide clock, and runs the tide clock that
-## fails the run at full tide.
+## view, wires the dig system to the tide clock and the shovel-upgrade range,
+## and runs the tide clock that fails the run at full tide.
 ## Implements design/game-brief.md MVP feature 1 (story-001-island-generation),
-## MVP feature 3 (story-003-tide-timer) and the composition of MVP feature 4
-## (story-004-treasures-and-trap).
+## MVP feature 3 (story-003-tide-timer) and the composition of MVP features 4
+## and 5 (story-004-treasures-and-trap, story-005-shovel-upgrade).
 
 const ISLAND_CONFIG_PATH: String = "res://assets/data/island_config.json"
 const TIDE_CONFIG_PATH: String = "res://assets/data/tide_config.json"
@@ -45,8 +45,12 @@ func _ready() -> void:
 	# The dig system is composed here so a dug trap can reach the tide clock.
 	# IslandView's _ready has already run (children first), so this replaces
 	# the default it made; set_dig_system always takes the injected one.
+	# One DigSystem per run: the shovel upgrade lives in it, so a new run's
+	# fresh DigSystem starts with the one-tile range (story 007 builds it).
 	var dig_system := DigSystem.new()
 	dig_system.set_tide_timer(_tide_timer)
+	var tool: Dictionary = items_config["tool"]
+	dig_system.set_upgrade_range(tool["dig_range"])
 	_island_view.set_dig_system(dig_system)
 	_run_state = RunState.new()
 	_run_state.phase_changed.connect(_on_phase_changed)
@@ -149,6 +153,7 @@ func _load_tide_config() -> Dictionary:
 
 # Validates items.json (schema: assets/data/items.md). Returns {} (after
 # pushing an error) on bad data, so TreasureTable can index it without checks.
+# On success `tool.dig_range` holds the offsets as an Array[Vector2i].
 func _load_items_config() -> Dictionary:
 	var config: Dictionary = _read_json_object(ITEMS_CONFIG_PATH, "Items")
 	if config.is_empty():
@@ -212,8 +217,32 @@ func _load_items_config() -> Dictionary:
 	if not config.get("tool") is Dictionary:
 		push_error("Items config: 'tool' must be an object.")
 		return {}
-	if not _has_valid_id(config["tool"], "tool"):
+	var tool: Dictionary = config["tool"]
+	if not _has_valid_id(tool, "tool"):
 		return {}
+	if not tool.get("dig_range") is Array or (tool["dig_range"] as Array).is_empty():
+		push_error("Items config: tool.dig_range must be a non-empty list of [x, y] offsets.")
+		return {}
+	var raw_offsets: Array = tool["dig_range"]
+	var upgrade_range: Array[Vector2i] = []
+	for i: int in raw_offsets.size():
+		if not raw_offsets[i] is Array:
+			push_error("Items config: tool.dig_range[%d] must be an [x, y] pair." % i)
+			return {}
+		var pair: Array = raw_offsets[i]
+		if pair.size() != 2 or not _is_whole_number(pair[0]) or not _is_whole_number(pair[1]):
+			push_error("Items config: tool.dig_range[%d] must be an [x, y] pair of whole numbers." % i)
+			return {}
+		var offset := Vector2i(int(pair[0]), int(pair[1]))
+		if upgrade_range.has(offset):
+			push_error("Items config: tool.dig_range lists [%d, %d] more than once." % [offset.x, offset.y])
+			return {}
+		upgrade_range.append(offset)
+	if not upgrade_range.has(Vector2i.ZERO):
+		push_error("Items config: tool.dig_range must include [0, 0] (the tapped cell).")
+		return {}
+	# Converted once here, at the data-file boundary, so _ready injects it as is.
+	tool["dig_range"] = upgrade_range
 	return config
 
 
@@ -228,6 +257,11 @@ func _has_valid_id(entry: Dictionary, label: String) -> bool:
 
 func _is_number(value: Variant) -> bool:
 	return value is float or value is int
+
+
+# JSON has no integer type, so a whole number arrives as a float such as 1.0.
+func _is_whole_number(value: Variant) -> bool:
+	return _is_number(value) and float(value) == floorf(float(value))
 
 
 # A spawn weight: any non-negative number (zero disables that entry).

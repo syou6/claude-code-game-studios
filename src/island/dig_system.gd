@@ -4,12 +4,18 @@ extends RefCounted
 ## dig range around a tapped cell and applies what each dug tile reveals (a
 ## treasure joins the inventory, a trap raises the tide). No scene, node or
 ## singleton dependency, so it can be unit-tested without a running game.
-## Implements design/game-brief.md MVP feature 2 (story-002-dig-action) and the
-## reveal step of MVP feature 4 (story-004-treasures-and-trap).
+## Implements design/game-brief.md MVP feature 2 (story-002-dig-action), the
+## reveal step of MVP feature 4 (story-004-treasures-and-trap) and the shovel
+## upgrade of MVP feature 5 (story-005-shovel-upgrade).
+##
+## The shovel upgrade is state of this instance only. One DigSystem serves one
+## island, so a new run that builds a new DigSystem starts again with the
+## one-tile range; story 007 builds that new run.
 
 ## Cell offsets, relative to the tapped cell, that one dig covers. The default
 ## is exactly one tile (the tapped cell only). This is the structural default,
-## not a tuning knob; story 005 widens the range by assigning a larger array.
+## not a tuning knob; digging up the TOOL replaces it with the injected upgrade
+## range (items.json `tool.dig_range`) for the rest of this system's life.
 var dig_range: Array[Vector2i] = [Vector2i.ZERO]
 
 ## Treasure revealed this run and not yet carried home, in dig order. Story 006
@@ -17,12 +23,27 @@ var dig_range: Array[Vector2i] = [Vector2i.ZERO]
 var inventory: Array[TileContent] = []
 
 var _tide_timer: TideTimer
+var _upgrade_range: Array[Vector2i] = []
+var _upgraded: bool = false
 
 
 ## Injects the tide clock a dug trap raises. A system with none injected
 ## reveals traps without effect.
 func set_tide_timer(timer: TideTimer) -> void:
 	_tide_timer = timer
+
+
+## Injects the dig range the shovel upgrade grants: cell offsets relative to
+## the tapped cell, from items.json `tool.dig_range` (main.gd validates it:
+## non-empty, no repeats, includes Vector2i.ZERO). The array is copied. A
+## system with none injected reveals the TOOL without effect.
+func set_upgrade_range(upgrade_range: Array[Vector2i]) -> void:
+	_upgrade_range = upgrade_range.duplicate()
+
+
+## Returns true once a dug TOOL has widened `dig_range` on this system.
+func has_upgrade() -> bool:
+	return _upgraded
 
 
 ## Returns the summed score value of `inventory`.
@@ -52,11 +73,16 @@ static func position_to_cell(
 ## and not yet dug. SEA cells, out-of-grid cells and already-dug cells are
 ## skipped silently. Each newly dug cell's contents take effect once: a
 ## TREASURE is appended to `inventory`, a TRAP adds its tide seconds to the
-## injected tide timer, EMPTY or no contents do nothing. Returns the cells newly
-## dug (empty when nothing changed).
+## injected tide timer, the first TOOL replaces `dig_range` with the upgrade
+## range from the next call on (a later TOOL does nothing more), EMPTY or no
+## contents do nothing. Returns the cells newly dug (empty when nothing
+## changed).
 func dig(grid: IslandGrid, tapped_cell: Vector2i) -> Array[Vector2i]:
 	var newly_dug: Array[Vector2i] = []
-	for offset: Vector2i in dig_range:
+	# A copy taken now: a TOOL dug in this loop widens the next tap, not the
+	# cells this tap still has to visit.
+	var offsets: Array[Vector2i] = dig_range.duplicate()
+	for offset: Vector2i in offsets:
 		var cell: Vector2i = tapped_cell + offset
 		if not (grid.is_in_bounds(cell) and grid.mark_dug(cell)):
 			continue
@@ -70,5 +96,8 @@ func dig(grid: IslandGrid, tapped_cell: Vector2i) -> Array[Vector2i]:
 			TileContent.Kind.TRAP:
 				if _tide_timer != null:
 					_tide_timer.add_tide(content.tide_seconds)
-			# TileContent.Kind.TOOL: the shovel upgrade effect is story 005.
+			TileContent.Kind.TOOL:
+				if not _upgraded and not _upgrade_range.is_empty():
+					dig_range = _upgrade_range.duplicate()
+					_upgraded = true
 	return newly_dug

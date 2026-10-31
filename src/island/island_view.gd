@@ -7,7 +7,8 @@ extends Control
 ## Implements design/game-brief.md MVP features 1 and 2
 ## (story-001-island-generation, story-002-dig-action); the dig gate on the
 ## run's phase is MVP feature 3 (story-003-tide-timer); the per-kind look of a
-## dug tile's contents is MVP feature 4 (story-004-treasures-and-trap).
+## dug tile's contents is MVP feature 4 (story-004-treasures-and-trap); the
+## acquired-upgrade frame is MVP feature 5 (story-005-shovel-upgrade).
 
 ## Color of SEA tiles.
 const SEA_COLOR: Color = Color(0.16, 0.42, 0.78)
@@ -23,8 +24,16 @@ const TREASURE_COLOR: Color = Color(1.0, 0.84, 0.2)
 ## Color of a revealed TRAP (purple; distinct from the orange boat and from the
 ## red failed-tide gauge).
 const TRAP_COLOR: Color = Color(0.6, 0.15, 0.7)
-## Color of a revealed TOOL slot (teal).
+## Color of a revealed TOOL slot (teal), and of the frame drawn around the grid
+## once the shovel upgrade is acquired, so the two read as one thing.
 const TOOL_COLOR: Color = Color(0.1, 0.78, 0.72)
+## Line width, in pixels, of the shovel-upgrade frame. Godot 4.7 draws
+## CanvasItem lines with no antialiasing feather, so the width alone must make
+## the frame read clearly; 4 px does on a phone screen. Presentation constant.
+const UPGRADE_FRAME_WIDTH: float = 4.0
+## Gap, in pixels, between the grid's outer edge and the upgrade frame, so the
+## frame never touches a tile. Presentation constant.
+const UPGRADE_FRAME_GAP: float = 2.0
 ## Fraction of a cell left empty on each side, to show the grid.
 const TILE_INSET_RATIO: float = 0.04
 ## Fraction of a cell left as dug-brown border on each side of the contents
@@ -36,10 +45,15 @@ var _dig_system: DigSystem
 var _run_state: RunState
 var _cell_size: float = 0.0
 var _origin: Vector2 = Vector2.ZERO
+# True when Godot also turns every touch into a mouse press, so a ScreenTouch
+# must be ignored to handle each tap once (see _gui_input).
+var _touch_arrives_as_mouse: bool = true
 
 
 func _ready() -> void:
 	resized.connect(queue_redraw)
+	_touch_arrives_as_mouse = ProjectSettings.get_setting(
+		"input_devices/pointing/emulate_mouse_from_touch", true)
 	# Fallback composition: a view that never gets set_dig_system() still digs.
 	# This runs before the parent's _ready (children are readied first), so an
 	# injection made there replaces this default; an injected system always wins.
@@ -67,9 +81,12 @@ func set_run_state(run_state: RunState) -> void:
 	_run_state = run_state
 
 
-## Handles a left mouse press or a screen touch press as a dig tap. Godot's
-## default touch-to-mouse emulation delivers phone taps as mouse events; a
-## ScreenTouch for the same tap is harmless because re-digging is a no-op.
+## Handles a left mouse press or a screen touch press as a dig tap, exactly once
+## per tap. With touch-to-mouse emulation on (the project default, read in
+## _ready), one phone tap arrives as BOTH a ScreenTouch and a mouse press
+## (observed on 4.7.2); only the mouse press is used then. Handling both would
+## dig twice, and after the shovel upgrade the second dig would already use the
+## wider range on the very tap that found the tool (story 005).
 func _gui_input(event: InputEvent) -> void:
 	var tap_position: Vector2
 	if event is InputEventMouseButton:
@@ -79,7 +96,7 @@ func _gui_input(event: InputEvent) -> void:
 		tap_position = mouse_event.position
 	elif event is InputEventScreenTouch:
 		var touch_event: InputEventScreenTouch = event
-		if not touch_event.pressed:
+		if not touch_event.pressed or _touch_arrives_as_mouse:
 			return
 		tap_position = touch_event.position
 	else:
@@ -118,11 +135,24 @@ func _draw() -> void:
 					draw_rect(rect.grow(-content_inset), TRAP_COLOR)
 				TileContent.Kind.TOOL:
 					draw_rect(rect.grow(-content_inset), TOOL_COLOR)
+	if _dig_system != null and _dig_system.has_upgrade():
+		# Assumes the outline stroke is centred on the rect's edge (not covered
+		# by docs/engine-reference/godot/); this rect then puts the whole stroke
+		# in the margin _update_layout reserves outside the tiles.
+		var grid_rect := Rect2(_origin, Vector2(_grid.columns, _grid.rows) * _cell_size)
+		draw_rect(
+			grid_rect.grow(UPGRADE_FRAME_GAP + UPGRADE_FRAME_WIDTH / 2.0),
+			TOOL_COLOR, false, UPGRADE_FRAME_WIDTH)
 
 
 # Single source of the cell size and grid origin, used by both _draw and input.
+# A margin for the upgrade frame is kept on every side even before the upgrade,
+# so the frame never covers a tile or leaves the control and the tiles never
+# move when the upgrade is acquired.
 func _update_layout() -> void:
-	_cell_size = minf(size.x / _grid.columns, size.y / _grid.rows)
+	var frame_margin: float = UPGRADE_FRAME_GAP + UPGRADE_FRAME_WIDTH
+	var available: Vector2 = size - Vector2(frame_margin, frame_margin) * 2.0
+	_cell_size = maxf(0.0, minf(available.x / _grid.columns, available.y / _grid.rows))
 	_origin = (size - Vector2(_grid.columns, _grid.rows) * _cell_size) / 2.0
 
 
